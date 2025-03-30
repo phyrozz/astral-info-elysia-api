@@ -10,19 +10,38 @@ export const getCharacter = new Elysia()
 
     const result = await postgresHelper.query(
       `
-        SELECT 
+        select
           ch.id as id,
           ch.name as name,
-          p.name as path, 
+          p.name as path,
           t.name as type,
           ch.rarity as rarity,
           ch.release_date as release_date,
           ch.character_img as character_img,
-          ch.booru_tag_name as booru_tag_name
-        FROM public.characters ch 
-        JOIN public.paths p ON ch.path_id = p.id
-        JOIN public.types t ON ch.type_id = t.id
-        WHERE ch.id = $1 
+          ch.booru_tag_name as booru_tag_name,
+          JSON_BUILD_OBJECT(
+            'hp', cbs.hp,
+            'atk', cbs.atk,
+            'def', cbs.def,
+            'spd', cbs.spd,
+            'taunt', cbs.taunt
+          ) as base_stats
+        from
+          public.characters ch
+          join public.paths p on ch.path_id = p.id
+          join public.types t on ch.type_id = t.id
+          join public.characters_base_stats_mapping cbs on ch.id = cbs.character_id
+        where
+          ch.id = $1
+        group by
+          ch.id,
+          p.name,
+          t.name,
+          cbs.hp,
+          cbs.atk,
+          cbs.def,
+          cbs.spd,
+          cbs.taunt 
       `,
       [id]
     );
