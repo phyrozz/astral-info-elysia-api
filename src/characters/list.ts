@@ -9,6 +9,9 @@ export const listCharacter = new Elysia()
     const limit = (body as any)?.limit || 10;
     const offset = (body as any)?.offset || 0;
     const keyword = (body as any)?.keyword || '';
+    const filters = (body as any)?.filters || {};
+    const pathId = filters.pathId || 0;
+    const typeId = filters.typeId || 0;
 
     const result = await postgresHelper.query(
       `
@@ -25,10 +28,12 @@ export const listCharacter = new Elysia()
         JOIN public.paths p ON ch.path_id = p.id
         JOIN public.types t ON ch.type_id = t.id
         WHERE ch.name ILIKE $1 
+          AND (p.id = $2 OR $2 = 0)
+          AND (t.id = $3 OR $3 = 0)
         ORDER BY ch.name
-        LIMIT $2 OFFSET $3
+        LIMIT $4 OFFSET $5
       `,
-      [`%${keyword}%`, limit, offset]
+      [`%${keyword}%`, pathId, typeId, limit, offset]
     );
 
     const count = await postgresHelper.query(
@@ -39,8 +44,10 @@ export const listCharacter = new Elysia()
         JOIN public.paths p ON ch.path_id = p.id
         JOIN public.types t ON ch.type_id = t.id
         WHERE ch.name ILIKE $1
+          AND (p.id = $2 OR $2 = 0)
+          AND (t.id = $3 OR $3 = 0)
       `,
-      [`%${keyword}%`]
+      [`%${keyword}%`, pathId, typeId]
     );
 
     return {
