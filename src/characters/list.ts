@@ -12,6 +12,7 @@ export const listCharacter = new Elysia()
     const filters = (body as any)?.filters || {};
     const pathId = filters.pathId || 0;
     const typeId = filters.typeId || 0;
+    const rarity = filters.rarity || 0;
 
     const result = await postgresHelper.query(
       `
@@ -30,10 +31,11 @@ export const listCharacter = new Elysia()
         WHERE ch.name ILIKE $1 
           AND (p.id = $2 OR $2 = 0)
           AND (t.id = $3 OR $3 = 0)
+          AND (ch.rarity = $4 OR $4 = 0)
         ORDER BY ch.name
-        LIMIT $4 OFFSET $5
+        LIMIT $5 OFFSET $6
       `,
-      [`%${keyword}%`, pathId, typeId, limit, offset]
+      [`%${keyword}%`, pathId, typeId, rarity, limit, offset]
     );
 
     const count = await postgresHelper.query(
@@ -46,8 +48,9 @@ export const listCharacter = new Elysia()
         WHERE ch.name ILIKE $1
           AND (p.id = $2 OR $2 = 0)
           AND (t.id = $3 OR $3 = 0)
+          AND (ch.rarity = $4 OR $4 = 0)
       `,
-      [`%${keyword}%`, pathId, typeId]
+      [`%${keyword}%`, pathId, typeId, rarity]
     );
 
     return {
