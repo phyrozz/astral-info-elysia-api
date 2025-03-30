@@ -4,13 +4,11 @@ import { Character } from "../../models/character";
 
 export const listCharacter = new Elysia()
   .decorate('character', new Character())
-  .post('/characters/list', async ({ set, body }) => {
+  .post('/characters/list', async ({ body }) => {
     const postgresHelper = new PostgresDBHelper()
     const limit = (body as any)?.limit || 10;
     const offset = (body as any)?.offset || 0;
     const keyword = (body as any)?.keyword || '';
-
-    set.headers['access-control-allow-origin'] = '*'
 
     const result = await postgresHelper.query(
       `

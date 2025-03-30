@@ -4,13 +4,11 @@ import { Path } from "../../models/path";
 
 export const listPath = new Elysia()
   .decorate('path', new Path())
-  .post('/paths/list', async ({ set, body }) => {
+  .post('/paths/list', async ({ body }) => {
     const postgresHelper = new PostgresDBHelper()
     const limit = (body as any)?.limit || 10;
     const offset = (body as any)?.offset || 0;
     const keyword = (body as any)?.keyword || '';
-
-    set.headers['access-control-allow-origin'] = '*'
 
     const result = await postgresHelper.query(
       `

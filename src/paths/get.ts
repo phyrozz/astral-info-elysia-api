@@ -4,11 +4,9 @@ import { PostgresDBHelper } from "../../utils/postgres-db-helper";
 
 export const getPath = new Elysia()
   .decorate('path', new Path())
-  .get('/paths/get/:id', async ({ set, params }) => {
+  .get('/paths/get/:id', async ({ params }) => {
     const postgresHelper = new PostgresDBHelper()
     const id = params.id;
-
-    set.headers['access-control-allow-origin'] = '*'
 
     const result = await postgresHelper.query(
       `
