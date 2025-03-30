@@ -1,7 +1,9 @@
-import { Elysia } from "elysia";
+import { Elysia } from 'elysia';
+import { swagger } from '@elysiajs/swagger';
+import { servicesList } from './services-list';
 
-const app = new Elysia().get("/", () => "Hello Elysia").listen(3000);
-
-console.log(
-  `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
-);
+// call all services within the project
+const app = new Elysia()
+  .use(servicesList)
+  .use(swagger())
+  .listen(3000);
